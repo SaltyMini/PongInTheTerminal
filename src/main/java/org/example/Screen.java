@@ -63,9 +63,16 @@ public class Screen {
         synchronized (renderLock) {
             int ballSizeX = Assets.getBallSizeX();
             int ballSizeY = Assets.getBallSizeY();
-            for (int row = 0; row < ballSizeX; row++) {
-                for (int col = 0; col < ballSizeY; col++) {
-                    renderScreen[y + row][x + col] = '#';
+            
+            // Add bounds checking
+            for (int row = 0; row < ballSizeY; row++) {
+                for (int col = 0; col < ballSizeX; col++) {
+                    int drawY = y + row;
+                    int drawX = x + col;
+
+                    if (drawY >= 0 && drawY < Y_BOUND && drawX >= 0 && drawX < X_BOUND) {
+                        renderScreen[drawY][drawX] = '#';
+                    }
                 }
             }
         }
@@ -75,12 +82,19 @@ public class Screen {
         synchronized (renderLock) {
             int paddleSizeX = Assets.getPaddleX();
             int paddleSizeY = Assets.getPaddleY();
+            
+            // bounds checking
             for (int row = 0; row < paddleSizeY; row++) {
                 for (int col = 0; col < paddleSizeX; col++) {
-                    renderScreen[y + row][x + col] = '#';
+                    int drawY = y + row;
+                    int drawX = x + col;
+                    
+                    // Check bounds before drawing
+                    if (drawY >= 0 && drawY < Y_BOUND && drawX >= 0 && drawX < X_BOUND) {
+                        renderScreen[drawY][drawX] = '#';
+                    }
                 }
             }
-
         }
     }
 
@@ -88,9 +102,17 @@ public class Screen {
         synchronized (renderLock) {
             int paddleSizeX = Assets.getPaddleX();
             int paddleSizeY = Assets.getPaddleY();
+            
+            // bounds checking
             for (int row = 0; row < paddleSizeY; row++) {
                 for (int col = 0; col < paddleSizeX; col++) {
-                    renderScreen[y + row][x + col] = '#';
+                    int drawY = y + row;
+                    int drawX = x + col;
+                    
+
+                    if (drawY >= 0 && drawY < Y_BOUND && drawX >= 0 && drawX < X_BOUND) {
+                        renderScreen[drawY][drawX] = '#';
+                    }
                 }
             }
         }
@@ -98,9 +120,9 @@ public class Screen {
 
     public void clearScreen() {
         synchronized (renderLock) {
-            // Clear the inner area (not the borders)
-            for (int y = 1; y < Y_BOUND - Assets.getBallSizeY(); y++) {
-                for (int x = 1; x < X_BOUND - Assets.getBallSizeX(); x++) {
+
+            for (int y = 1; y < Y_BOUND - 1; y++) {
+                for (int x = 1; x < X_BOUND - 1; x++) {
                     renderScreen[y][x] = ' ';
                 }
             }
@@ -143,11 +165,9 @@ public class Screen {
 
         private void renderLoop() {
             long lastTime = System.nanoTime();
-            int count = 0;
 
             while (shoundRender) {
-                count++;
-                addDebugMessage( "Render loop count: " + count);
+
                 long currentTime = System.nanoTime();
                 long deltaTime = currentTime - lastTime;
 

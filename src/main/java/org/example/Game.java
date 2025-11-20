@@ -34,7 +34,6 @@ public class Game {
     }
 
     public void start() {
-        Screen.getInstance().addDebugMessage("start() called, isRunning = " + isRunning);
         if (!isRunning) {
             isRunning = true;
             Screen.getInstance().addDebugMessage("Starting game loop...");
@@ -48,7 +47,6 @@ public class Game {
     }
 
     private void update(double deltaTime) {
-        Screen.getInstance().addDebugMessage("Update called! deltaTime: " + deltaTime + " Ball at: " + ball.cord.x + ", " + ball.cord.y);
 
         moveBall(deltaTime);
 
@@ -69,12 +67,9 @@ public class Game {
     }
 
     private void moveBall(double deltaTime) {
-
-        //just guna make it bounce around to test
         double newX = ball.cord.x + (ball.velocityX * deltaTime);
         double newY = ball.cord.y + (ball.velocityY * deltaTime);
 
-        //check bounds collision
         Screen screen = Screen.getInstance();
         double newVelocityX = ball.velocityX;
         double newVelocityY = ball.velocityY;
@@ -82,23 +77,27 @@ public class Game {
         int ballSizeX = Assets.getBallSizeX();
         int ballSizeY = Assets.getBallSizeY();
 
-        // Check horizontal bounds
+        // Check horizontal bounds with proper validation
         if (newX <= 1) {
             newX = 1;
             newVelocityX = Math.abs(ball.velocityX); 
         } else if (newX + ballSizeX >= screen.getXBound() - 1) {
-            newX = screen.getXBound() - 1 - ballSizeX;
+            newX = Math.max(1, screen.getXBound() - 1 - ballSizeX);
             newVelocityX = -Math.abs(ball.velocityX); 
         }
 
-        // Check vertical bounds
+        // Check vertical bounds with proper validation
         if (newY <= 1) {
             newY = 1;
             newVelocityY = Math.abs(ball.velocityY);
         } else if (newY + ballSizeY >= screen.getYBound() - 1) {
-            newY = screen.getYBound() - 1 - ballSizeY;
+            newY = Math.max(1, screen.getYBound() - 1 - ballSizeY);
             newVelocityY = -Math.abs(ball.velocityY);
         }
+
+        // Ensure coordinates are never negative or too large
+        newX = Math.max(0, Math.min(newX, screen.getXBound() - ballSizeX));
+        newY = Math.max(0, Math.min(newY, screen.getYBound() - ballSizeY));
 
         ScreenCord cordToo = new ScreenCord(newX, newY);
         ball = new Ball(cordToo, newVelocityX, newVelocityY);
@@ -130,9 +129,22 @@ public class Game {
         }
 
         double newY = paddle.origin.y + (newVelocity * deltaTime);
-        ScreenCord newOrigin = new ScreenCord(paddle.origin.x, newY);
         
-        // You need to update the actual paddle objects!
+        // Add bounds checking for paddle movement
+        Screen screen = Screen.getInstance();
+        int paddleHeight = Assets.getPaddleY();
+        
+        // Ensure paddle stays within bounds
+        if (newY < 1) {
+            newY = 1;
+            newVelocity = 0; // Stop movement when hitting boundary
+        } else if (newY + paddleHeight >= screen.getYBound() - 1) {
+            newY = screen.getYBound() - 1 - paddleHeight;
+            newVelocity = 0; // Stop movement when hitting boundary
+        }
+        
+        ScreenCord newOrigin = new ScreenCord(paddle.origin.x, newY);
+
         if (paddle == paddle1) {
             paddle1 = new Paddle(newOrigin, paddle.width, paddle.height, newVelocity);
         } else {
@@ -161,10 +173,6 @@ public class Game {
                 while (accumulator >= TARGET_TIME) {
                     double deltaTime = TARGET_TIME / 1000000000.0; // Convert to seconds
                     update(deltaTime);
-                    tickCount++;
-                    if (tickCount % 120 == 0) { // Log once per second
-                        Screen.getInstance().addDebugMessage("Ticks: " + tickCount);
-                    }
                     accumulator -= TARGET_TIME;
                 }
 
