@@ -7,6 +7,15 @@ import java.util.Set;
 
 public class KeyboardListener implements KeyListener {
 
+    private static KeyboardListener instance;
+
+    public static KeyboardListener getInstance() {
+        if (instance == null) {
+            instance = new KeyboardListener();
+        }
+        return instance;
+    }
+
     private final Set<Integer> keysToListenActivly = Set.of(
             KeyEvent.VK_W,
             KeyEvent.VK_S,

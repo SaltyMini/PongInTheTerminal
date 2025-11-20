@@ -29,7 +29,7 @@ public class Game {
     }
 
     public Game() {
-        kbListener = new KeyboardListener();
+        kbListener = KeyboardListener.getInstance();
 
     }
 
