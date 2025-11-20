@@ -58,8 +58,8 @@ public class Game {
     private void moveBall(double deltaTime) {
 
         //just guna make it bounce around to test
-        double newX = ball.cord.x + (ball.velocityX * deltaTime);  // Keep as double
-        double newY = ball.cord.y + (ball.velocityY * deltaTime);  // Keep as double
+        double newX = ball.cord.x + (ball.velocityX * deltaTime);
+        double newY = ball.cord.y + (ball.velocityY * deltaTime);
 
         //check bounds collision
         Screen screen = Screen.getInstance();
@@ -69,7 +69,7 @@ public class Game {
         int ballSizeX = Assets.getBallSizeX();
         int ballSizeY = Assets.getBallSizeY();
 
-        // Check horizontal bounds (ball is ballSize units wide, account for border walls)
+        // Check horizontal bounds
         if (newX <= 1) {
             newX = 1;
             newVelocityX = Math.abs(ball.velocityX); 
@@ -78,7 +78,7 @@ public class Game {
             newVelocityX = -Math.abs(ball.velocityX); 
         }
 
-        // Check vertical bounds (ball is ballSize units tall, account for border walls)
+        // Check vertical bounds
         if (newY <= 1) {
             newY = 1;
             newVelocityY = Math.abs(ball.velocityY);
