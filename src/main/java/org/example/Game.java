@@ -13,7 +13,7 @@ public class Game {
     private record Ball(ScreenCord cord, double velocityX, double velocityY) { }
     private record Paddle(ScreenCord origin, double width, double height, double velocityY) {}
 
-    private Ball ball = new Ball(new ScreenCord(10.0, 5.0), 15.0, 10.0);  // Start away from corner with moderate speed
+    private Ball ball = new Ball(new ScreenCord(10.0, 5.0), 50.0, 50.0);  // Start away from corner with moderate speed
     private final int PADDLE_WALL_OFFSET = 5;
     private Paddle paddle1 = new Paddle(new ScreenCord(PADDLE_WALL_OFFSET, 3.0), 2.0, 7, 0);
     private Paddle paddle2 = new Paddle(new ScreenCord(Screen.getInstance().getXBound() - PADDLE_WALL_OFFSET, 3.0), 2.0, 7, 0);
@@ -66,22 +66,25 @@ public class Game {
         double newVelocityX = ball.velocityX;
         double newVelocityY = ball.velocityY;
 
-        // Check horizontal bounds (ball is 2 units wide, account for border walls)
+        int ballSizeX = Assets.getBallSizeX();
+        int ballSizeY = Assets.getBallSizeY();
+
+        // Check horizontal bounds (ball is ballSize units wide, account for border walls)
         if (newX <= 1) {
             newX = 1;
-            newVelocityX = Math.abs(ball.velocityX); // Make sure it bounces away from left wall
-        } else if (newX + 2 >= screen.getXBound() - 1) {  // Changed from +1 to +2 for ball width
-            newX = screen.getXBound() - 3;
-            newVelocityX = -Math.abs(ball.velocityX); // Make sure it bounces away from right wall
+            newVelocityX = Math.abs(ball.velocityX); 
+        } else if (newX + ballSizeX >= screen.getXBound() - 1) {
+            newX = screen.getXBound() - 1 - ballSizeX;
+            newVelocityX = -Math.abs(ball.velocityX); 
         }
 
-        // Check vertical bounds (ball is 2 units tall, account for border walls)
+        // Check vertical bounds (ball is ballSize units tall, account for border walls)
         if (newY <= 1) {
             newY = 1;
-            newVelocityY = Math.abs(ball.velocityY); // Make sure it bounces away from top wall
-        } else if (newY + 2 >= screen.getYBound() - 1) {  // Changed from +1 to +2 for ball height
-            newY = screen.getYBound() - 3;
-            newVelocityY = -Math.abs(ball.velocityY); // Make sure it bounces away from bottom wall
+            newVelocityY = Math.abs(ball.velocityY);
+        } else if (newY + ballSizeY >= screen.getYBound() - 1) {
+            newY = screen.getYBound() - 1 - ballSizeY;
+            newVelocityY = -Math.abs(ball.velocityY);
         }
 
         ScreenCord cordToo = new ScreenCord(newX, newY);

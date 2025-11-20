@@ -4,8 +4,8 @@ public class Screen {
 
     private boolean shoundRender = false;
 
-    private final int X_BOUND = 128;
-    private final int Y_BOUND = 32;
+    private final int X_BOUND = 512;
+    private final int Y_BOUND = 128;
 
     private final String[] debugMessages = new String[3];
 
@@ -61,18 +61,21 @@ public class Screen {
 
     public void setBall(int x, int y) {
         synchronized (renderLock) {
-            renderScreen[y][x] = '#';
-            renderScreen[y][x + 1] = '#';
-            renderScreen[y + 1][x] = '#';
-            renderScreen[y + 1][x + 1] = '#';
+            int ballSizeX = Assets.getBallSizeX();
+            int ballSizeY = Assets.getBallSizeY();
+            for (int row = 0; row < ballSizeX; row++) {
+                for (int col = 0; col < ballSizeY; col++) {
+                    renderScreen[y + row][x + col] = '#';
+                }
+            }
         }
     }
 
     public void clearScreen() {
         synchronized (renderLock) {
             // Clear the inner area (not the borders)
-            for (int y = 1; y < Y_BOUND - 1; y++) {
-                for (int x = 1; x < X_BOUND - 1; x++) {
+            for (int y = 1; y < Y_BOUND - Assets.getBallSizeY(); y++) {
+                for (int x = 1; x < X_BOUND - Assets.getBallSizeX(); x++) {
                     renderScreen[y][x] = ' ';
                 }
             }
