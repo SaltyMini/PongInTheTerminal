@@ -4,7 +4,9 @@ public class Assets {
 
     private final static int ballSizeX = 5;
     private final static int ballSizeY = 7;
-    private final static int paddleSize = 12;
+
+    private final static int paddleX = 8;
+    private final static int paddleY = 16;
 
     public static int getBallSizeX() {
         return ballSizeX;
@@ -15,9 +17,12 @@ public class Assets {
     }
 
 
-
-    public static int getPaddleSize() {
-        return paddleSize;
+    public static int getPaddleY() {
+        return paddleY;
     }
+    public static int getPaddleX() {
+        return paddleX;
+    }
+
 
 }

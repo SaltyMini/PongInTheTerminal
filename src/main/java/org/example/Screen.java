@@ -71,6 +71,31 @@ public class Screen {
         }
     }
 
+    public void setPaddle1(int x, int y) {
+        synchronized (renderLock) {
+            int paddleSizeX = Assets.getPaddleX();
+            int paddleSizeY = Assets.getPaddleY();
+            for (int row = 0; row < paddleSizeY; row++) {
+                for (int col = 0; col < paddleSizeX; col++) {
+                    renderScreen[y + row][x + col] = '#';
+                }
+            }
+
+        }
+    }
+
+    public void setPaddle2(int x, int y) {
+        synchronized (renderLock) {
+            int paddleSizeX = Assets.getPaddleX();
+            int paddleSizeY = Assets.getPaddleY();
+            for (int row = 0; row < paddleSizeY; row++) {
+                for (int col = 0; col < paddleSizeX; col++) {
+                    renderScreen[y + row][x + col] = '#';
+                }
+            }
+        }
+    }
+
     public void clearScreen() {
         synchronized (renderLock) {
             // Clear the inner area (not the borders)

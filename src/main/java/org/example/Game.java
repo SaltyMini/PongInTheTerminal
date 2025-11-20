@@ -1,20 +1,23 @@
 package org.example;
 
+import java.awt.event.KeyEvent;
+
 public class Game {
 
     private boolean isRunning = false;
     private static Game instance;
 
-    private record ScreenCord(double x, double y) {
-    }  // Changed to double
+    private KeyboardListener kbListener;
+
+    private record ScreenCord(double x, double y) {}
 
     private final int MAX_PADDLE_SPEED = 10;
 
     private record Ball(ScreenCord cord, double velocityX, double velocityY) { }
     private record Paddle(ScreenCord origin, double width, double height, double velocityY) {}
 
-    private Ball ball = new Ball(new ScreenCord(10.0, 5.0), 50.0, 50.0);  // Start away from corner with moderate speed
-    private final int PADDLE_WALL_OFFSET = 5;
+    private Ball ball = new Ball(new ScreenCord(60.0, 60.0), 50.0, 50.0);
+    private final int PADDLE_WALL_OFFSET = 12;
     private Paddle paddle1 = new Paddle(new ScreenCord(PADDLE_WALL_OFFSET, 3.0), 2.0, 7, 0);
     private Paddle paddle2 = new Paddle(new ScreenCord(Screen.getInstance().getXBound() - PADDLE_WALL_OFFSET, 3.0), 2.0, 7, 0);
 
@@ -26,6 +29,7 @@ public class Game {
     }
 
     public Game() {
+        kbListener = new KeyboardListener();
 
     }
 
@@ -52,6 +56,15 @@ public class Game {
         Screen screen = Screen.getInstance();
         screen.clearScreen();
         screen.setBall((int) ball.cord.x, (int) ball.cord.y);  // Cast to int only when rendering
+
+        //uodate paddles
+        movePaddle(deltaTime, paddle1);
+        movePaddle(deltaTime, paddle2);
+
+        screen.setPaddle1((int) paddle1.origin.x, (int) paddle1.origin.y);
+        screen.setPaddle2((int) paddle2.origin.x, (int) paddle2.origin.y);
+
+
 
     }
 
@@ -91,13 +104,40 @@ public class Game {
         ball = new Ball(cordToo, newVelocityX, newVelocityY);
     }
 
+
     private void movePaddle(double deltaTime, Paddle paddle) {
+        double newVelocity = paddle.velocityY;
+        int SCALER = 5;
 
-        double newY = paddle.origin.y + (paddle.velocityY * deltaTime);
+        if(paddle == paddle2) {
+            if(kbListener.getCurrentlyPressedKeys().contains(KeyEvent.VK_W)) {
+                newVelocity = paddle.velocityY + SCALER;
+            } else if(kbListener.getCurrentlyPressedKeys().contains(KeyEvent.VK_S)) {
+                newVelocity = paddle.velocityY - SCALER;
+            }
+        } else {
+            if(kbListener.getCurrentlyPressedKeys().contains(KeyEvent.VK_UP)) {
+                newVelocity = paddle.velocityY + SCALER;
+            } else if(kbListener.getCurrentlyPressedKeys().contains(KeyEvent.VK_DOWN)) {
+                newVelocity = paddle.velocityY - SCALER;
+            }
+        }
 
-        //check key presses
+        if(newVelocity > MAX_PADDLE_SPEED) {
+            newVelocity = MAX_PADDLE_SPEED;
+        } else if(newVelocity < -MAX_PADDLE_SPEED) {
+            newVelocity = -MAX_PADDLE_SPEED;
+        }
 
-
+        double newY = paddle.origin.y + (newVelocity * deltaTime);
+        ScreenCord newOrigin = new ScreenCord(paddle.origin.x, newY);
+        
+        // You need to update the actual paddle objects!
+        if (paddle == paddle1) {
+            paddle1 = new Paddle(newOrigin, paddle.width, paddle.height, newVelocity);
+        } else {
+            paddle2 = new Paddle(newOrigin, paddle.width, paddle.height, newVelocity);
+        }
     }
 
     private class GameLoop {

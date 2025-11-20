@@ -24,11 +24,22 @@ public class KeyboardListener implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
+        if(keysToListenActivly.contains(e.getKeyCode())) {
+            currentlyPressedKeys.add(e.getKeyCode());
+            Screen.getInstance().addDebugMessage("Key Pressed: " + e.getKeyChar() + " Code: " + e.getKeyCode());
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(keysToListenActivly.contains(e.getKeyCode())) {
+            currentlyPressedKeys.remove(e.getKeyCode());
+            Screen.getInstance().addDebugMessage("Key Released: " + e.getKeyChar() + " Code: " + e.getKeyCode());
+        }
+    }
 
+    public Set<Integer> getCurrentlyPressedKeys() {
+        return currentlyPressedKeys;
     }
 
 
